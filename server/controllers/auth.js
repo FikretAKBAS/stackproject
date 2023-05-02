@@ -61,11 +61,35 @@ const register = async (req, res) => {
         msg: "Please enter an acceptable email address to register.",
       });
     }
-  } catch (error) {}
+
+    /**
+     * ! Creating new user
+     */
+
+    const newUser = await AuthSchema.create({
+      usrname,
+      email,
+      password: passwordHash,
+    });
+
+    /**
+     * ! Creating token
+     */
+
+    const token = jwt.sign({ id: newUser._id }, "SECRET_KEY", {
+      expiresIn: "1h",
+    });
+
+    res.status(201).json({ status: "OK", newUser, token });
+  } catch (error) {
+    return res.status(500).json({
+      msg: error.message,
+    });
+  }
 };
 
 /**
- * ! definitions of the login  controllers
+ * * definitions of the login  controllers
  */
 
 const login = async (req, res) => {
@@ -74,7 +98,7 @@ const login = async (req, res) => {
 };
 
 /**
- * ! controlling of the email by a email controller regular expression
+ * * controlling of the email by a email controller regular expression
  */
 
 function isEmail(emailAddress) {
@@ -85,7 +109,7 @@ function isEmail(emailAddress) {
 }
 
 /**
- * ! exporting of the modules
+ * * exporting of the modules
  */
 
 module.exports = { register, login };
