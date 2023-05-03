@@ -73,7 +73,7 @@ const register = async (req, res) => {
     });
 
     /**
-     * ! Creating token
+     * ! if there is not problem before this step then Creating token
      */
 
     const token = jwt.sign({ id: newUser._id }, "SECRET_KEY", {
@@ -94,7 +94,48 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
   try {
-  } catch (error) {}
+    /**
+     * ! Gettin an user informations from body
+     */
+    const { email, password } = req.body;
+
+    /**
+     * * Controlling user email
+     */
+
+    const user = await AuthSchema.findOne(email);
+
+    if (!user) {
+      return res.status(500).json({
+        msg: "We didn't find this user. Are your sure about this user?",
+      });
+    }
+
+    /**
+     * * Controlling user password
+     */
+
+    const passwordCompare = await bcrypt.compare(password, user.password);
+    if (!passwordCompare) {
+      return res
+        .status(500)
+        .json({ msg: "Please enter a valid password for login." });
+    }
+
+    /**
+     * ! if there is not problem before this step then Creating token
+     */
+
+    const token = jwt.sign({ id: user._id }, "SECRET_KEY", { expiresIn: "1h" });
+
+    res.status(200).json({ status: "OK", user, token });
+
+    /**
+     * ? if there is an error at conditions these are defined above this line then you'll monitoring error message
+     */
+  } catch (error) {
+    return res.status(500).json({ msg: "error.message" });
+  }
 };
 
 /**
