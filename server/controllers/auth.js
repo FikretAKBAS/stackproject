@@ -12,6 +12,10 @@ const bcrypt = require("bcryptjs");
 const AuthSchema = require("../models/auth");
 
 /**
+ * ! __________________REGISTER DIVISION
+ */
+
+/**
  * ! definitions of the register  controllers
  */
 const register = async (req, res) => {
@@ -19,12 +23,13 @@ const register = async (req, res) => {
     /**
      * * We'll take this 3 data from FrontEnd Body
      */
-    const { username, password } = req.body;
+    const { username, password, email } = req.body;
+
     /**
      * * ASYNC function for find a useremail
      */
 
-    const user = await AuthSchema.findOne(email);
+    const user = await AuthSchema.findOne({ email });
 
     /**
      * * if email address is already registered
@@ -67,7 +72,7 @@ const register = async (req, res) => {
      */
 
     const newUser = await AuthSchema.create({
-      usrname,
+      username,
       email,
       password: passwordHash,
     });
@@ -89,6 +94,9 @@ const register = async (req, res) => {
 };
 
 /**
+ * ! __________________LOGIN DIVISION
+ */
+/**
  * * definitions of the login  controllers
  */
 
@@ -103,7 +111,7 @@ const login = async (req, res) => {
      * * Controlling user email
      */
 
-    const user = await AuthSchema.findOne(email);
+    const user = await AuthSchema.findOne({ email });
 
     if (!user) {
       return res.status(500).json({
@@ -134,7 +142,7 @@ const login = async (req, res) => {
      * ? if there is an error at conditions these are defined above this line then you'll monitoring error message
      */
   } catch (error) {
-    return res.status(500).json({ msg: "error.message" });
+    return res.status(500).json({ msg: `error.message` });
   }
 };
 
